@@ -138,6 +138,9 @@ IPv4_ADDR_REGEX = '(?:\d{1,3}\.){3}\d{1,3}'
 IPv6_ADDR_REGEX = "([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{0,4})"
 IP_ADDR_REGEX = "("+IPv4_ADDR_REGEX+"|"+IPv6_ADDR_REGEX+")"
 
+APACHE_COMBINED = '''%h %l %u %t "%r" %>s %O "%{Referer}i" "%{User-Agent}i"'''
+APACHE_COMMON = '''%h %l %u %t "%r" %>s %O'''
+
 FORMAT_STRINGS = [
     ['%%', '%', lambda match: '', lambda matched_strings: matched_strings],
     [make_regex('%a'), IP_ADDR_REGEX, lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
@@ -186,7 +189,13 @@ FORMAT_STRINGS = [
 ]
 
 class Parser:
-    def __init__(self, format_string):
+    """
+    Default to the "combined" format specified by Apache by default
+    """
+    def __init__(self, format_string=None):
+        if not format_string:
+            format_string = APACHE_COMBINED
+
         self.names = []
 
         self.pattern = "("+"|".join(x[0] for x in FORMAT_STRINGS)+")"
@@ -232,7 +241,7 @@ class Parser:
             return results
 
 
-def make_parser(format_string):
+def make_parser(format_string=None):
     return Parser(format_string).parse
 
 def get_fieldnames(format_string):
