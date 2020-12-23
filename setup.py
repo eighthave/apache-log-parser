@@ -13,7 +13,7 @@ setup(name="apache-log-parser",
       author_email="rory@technomancy.org",
       packages=['apache_log_parser'],
       install_requires = [
-        'user-agents',
+        'user-agents>=1.1.0',
       ],
       license = 'GPLv3+',
       description = "Parse lines from an apache log file",
