@@ -224,6 +224,8 @@ class Parser:
                         self.log_line_regex += "(?P<"+name+">"+log_part_regex+")"
                         break
 
+        if self.log_line_regex:
+            self.log_line_regex += '$'
         self._log_line_regex_raw = self.log_line_regex
         self.log_line_regex = re.compile(self.log_line_regex)
         self.names = tuple(self.names)

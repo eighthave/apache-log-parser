@@ -134,6 +134,24 @@ class ApacheLogParserTestCase(unittest.TestCase):
     def test_doctest_readme(self):
         doctest.testfile("../README.md")
 
+    def test_tor_log(self):
+        tor_log = "0.0.0.0 - %u %t \"%r\" %>s %b \"%{Referer}i\" \"-\" %{GEOIP_COUNTRY_CODE}e"
+        line_parser = apache_log_parser.make_parser(tor_log)
+        sample = '''0.0.0.0 - - [16/Dec/2020:06:25:06 +0000] "GET /?q=Syntax+Highlighting&lang=en HTTP/2.0" 200 1015 "https://f-droid.org/" "-" GR'''
+        expected_data = {
+            'env_geoip_country_code': 'GR',
+            'remote_user': '-',
+            'request_first_line': 'GET /?q=Syntax+Highlighting&lang=en HTTP/2.0',
+            'request_header_referer': 'https://f-droid.org/',
+            'request_http_ver': '2.0',
+            'request_method': 'GET',
+            'request_url': '/?q=Syntax+Highlighting&lang=en',
+            'status': '200',
+            'time_received': '[16/Dec/2020:06:25:06 +0000]',
+        }
+        log_data = line_parser(sample)
+        for k, v in expected_data.items():
+            self.assertEqual(log_data[k], v)
 
 
 if __name__ == '__main__':
