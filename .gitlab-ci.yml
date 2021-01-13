@@ -1,0 +1,42 @@
+
+variables:
+  pip: pip3 --timeout 100 --retries 10
+# speed up git checkout phase
+  GIT_DEPTH: 1
+
+.apt-template: &apt-template
+  script:
+    - apt-get -qy update
+    - apt-get -qy install
+          python3-pip
+          python3-user-agents
+          python3-venv
+          python3-yaml
+    - python3 setup.py test
+
+.pip-template: &pip-template
+  script:
+    - pip install wheel
+    - pip install user-agents
+    - pip install -e .
+    - python3 setup.py test
+
+debian-bullseye:
+  image: debian:bullseye
+  <<: *apt-template
+
+ubuntu-lts:
+  image: ubuntu
+  <<: *apt-template
+
+python-latest:
+  image: python
+  <<: *pip-template
+
+python3.8:
+  image: python:3.8
+  <<: *pip-template
+
+python3.7:
+  image: python:3.7-alpine
+  <<: *pip-template
