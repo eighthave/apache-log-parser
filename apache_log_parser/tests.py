@@ -144,7 +144,8 @@ class ApacheLogParserTestCase(unittest.TestCase):
                          'request_header_user_agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; '
                                                       'rv:50.0) Gecko/20100101 Firefox/50.0',
                          'request_header_user_agent__browser__family': 'Firefox',
-                         'request_header_user_agent__browser__version_string': '50.0',
+                         # user_agents sometimes returns this with a trailing '.', e.g. '50.0.'
+                         # 'request_header_user_agent__browser__version_string': '50.0',
                          'request_header_user_agent__is_mobile': False,
                          'request_header_user_agent__os__family': 'Ubuntu',
                          'request_header_user_agent__os__version_string': '',
@@ -155,6 +156,15 @@ class ApacheLogParserTestCase(unittest.TestCase):
                          'time_received': '[31/Dec/2017:03:14:19 +0100]'}
         for k,v in expected_data.items():
             self.assertEqual(log_data[k], v)
+
+        log_data = line_parser('''165.226.7.238 - - [18/Dec/2020:14:54:27 +0000] "GET / HTTP/1.0" 200 19245 "-" "-"''')
+        self.assertEqual(log_data['request_http_ver'], '1.0')
+
+        log_data = line_parser('''17.103.15.13 - - [17/Dec/2020:00:45:26 +0000] "GET /feed.xml HTTP/1.1" 304 244 "-" "Tiny Tiny RSS/UNKNOWN (Unsupported) (http://tt-rss.org/)"''')
+        self.assertEqual(log_data['request_http_ver'], '1.1')
+
+        log_data = line_parser('''0.0.0.0 - - [13/Dec/2020:14:49:49 +0000] "GET /static/favicon.png HTTP/2.0" 200 2628 "-" "-"''')
+        self.assertEqual(log_data['request_http_ver'], '2.0')
 
     def test_doctest_readme(self):
         doctest.testfile("../README.md")
