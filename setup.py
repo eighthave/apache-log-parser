@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-import importlib
 from setuptools import setup
-
-version = importlib.import_module('apache_log_parser._version')
-__version__ = version.__version__
 
 
 setup(name="apache-log-parser",
-      version=__version__,
+      version='1.8.0a',
       author="Rory McCann",
       author_email="rory@technomancy.org",
       packages=['apache_log_parser'],
